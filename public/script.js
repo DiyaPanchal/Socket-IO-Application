@@ -1,21 +1,22 @@
 const socket = io();
 
 const usernameInput = document.getElementById("username");
-const setUsernameBtn = document.getElementById("setUsernameBtn");
+const setUsernameButton = document.getElementById("setUsernameButton");
 const messageInput = document.getElementById("message");
-const sendButton = document.getElementById("sendBtn");
+const sendButton = document.getElementById("sendButton");
 const messagesDiv = document.getElementById("messages");
 
-let username = "Anonymous"; 
+let socketId = "";
 
-setUsernameBtn.addEventListener("click", () => {
-  const name = usernameInput.value.trim();
-  if (name) {
-    username = name;
-    socket.emit("set username", username);
-    usernameInput.disabled = true; 
-    setUsernameBtn.disabled = true;
-  }
+setUsernameButton.addEventListener("click", () => {
+  const username = usernameInput.value.trim();
+  socket.emit("set username", username);
+  usernameInput.disabled = true;
+  setUsernameButton.disabled = true;
+});
+
+socket.on("connect", () => {
+  socketId = socket.id;
 });
 
 sendButton.addEventListener("click", () => {
@@ -26,9 +27,11 @@ sendButton.addEventListener("click", () => {
   }
 });
 
-socket.on("chat message", ({ sender, msg }) => {
-  console.log(`Received message from ${sender}: ${msg}`); 
+socket.on("chat message", ({ sender, msg, timestamp, id }) => {
+  const isSelf = id === socketId;
   const div = document.createElement("div");
-  div.innerHTML = `<strong>${sender}:</strong> ${msg}`;
+  div.innerHTML = `${
+    isSelf ? "You" : sender
+  } sent this message on ${timestamp} : ${msg}`;
   messagesDiv.appendChild(div);
 });

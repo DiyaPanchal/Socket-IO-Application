@@ -2,6 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
+const PORT = process.env.PORT || 3001;
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
@@ -9,24 +10,27 @@ const io = new Server(server);
 app.use(express.static("public"));
 
 io.on("connection", (socket) => {
-  console.log("A user connected");
+  console.log("User connected");
 
   socket.on("set username", (username) => {
-    socket.username = username; 
-    console.log(`Username set: ${username}`);
+    socket.username = username || "Anonymous";
   });
 
   socket.on("chat message", (msg) => {
-    const sender = socket.username || "Anonymous"; 
-    console.log(`Message from ${sender}: ${msg}`);
+    const timestamp = new Date().toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
+    io.emit("chat message", {
+      sender: socket.username,
+      msg,
+      timestamp,
+      id: socket.id,
+    });
   });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-  });
+  socket.on("disconnect", () => console.log("User disconnected"));
 });
 
-const PORT = process.env.PORT || 3000;
 server.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
 );
