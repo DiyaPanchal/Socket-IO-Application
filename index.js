@@ -1,24 +1,24 @@
 import express from "express";
-import "dotenv/config";
 import { createServer } from "http";
+import { Server } from "socket.io";
 
 const app = express();
-const PORT  = process.env.PORT || 3002;
 const server = createServer(app);
+const io = new Server(server);
 
-app.use(express.static("public"));  
+app.use(express.static("public"));
+
 io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("set username", (username) => {
-    socket.username = username;
+    socket.username = username; 
     console.log(`Username set: ${username}`);
   });
 
   socket.on("chat message", (msg) => {
-    const sender = socket.username || "Anonymous";
-    console.log(`Message from ${sender}: ${msg}`); 
-    io.emit("chat message", { sender, msg });
+    const sender = socket.username || "Anonymous"; 
+    console.log(`Message from ${sender}: ${msg}`);
   });
 
   socket.on("disconnect", () => {
@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () =>
+  console.log(`Server running on http://localhost:${PORT}`)
+);

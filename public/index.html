@@ -3,9 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Time Chat Application</title>
+    <title>Chat App with Usernames</title>
+    <script defer src="/socket.io/socket.io.js"></script>
+    <script defer src="script.js"></script>
 </head>
 <body>
-    
+    <h2>Chat App</h2>
+
+    <div>
+        <input id="username" type="text" placeholder="Enter your name">
+        <button id="setUsernameBtn">Set Name</button>
+    </div>
+
+    <div id="messages"></div>
+
+    <input id="message" type="text" placeholder="Type a message...">
+    <button id="sendBtn">Send</button>
 </body>
 </html>
+
